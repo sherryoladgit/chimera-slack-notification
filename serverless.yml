@@ -1,0 +1,48 @@
+service: chimera-slack-notification
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: python3.8
+  region: us-west-2
+  # timeout: 900
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Resource: "*"
+          Action:
+            - "ssm:DescribeParameters"
+        - Effect: "Allow"
+          Resource: !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/chimera-slack-*
+          Action:
+            - "ssm:Get*"
+        - Effect: "Allow"
+          Action:
+            - "secretsmanager:GetSecretValue"
+            - "secretsmanager:DescribeSecret"
+          Resource: "*"
+
+constructs:
+  jobs:
+    type: queue
+    worker:
+      handler: handler.consumer
+
+plugins:
+  - serverless-lift
+  - serverless-python-requirements
+
+package:
+  patterns:
+    - "!node_modules/**"
+    - "!.serverless-docker/**"
+    - "!.downloads/**"
+    - "!**/__pycache__/**"
+
+custom:
+  pythonRequirements:
+    pythonBin: python3.8
+    dockerizePip: false
+    # Alternative to Dockerfile but used prefer flexibility of Dockerfile
+    # dockerImage: mlupin/docker-lambda:python3.9-build
