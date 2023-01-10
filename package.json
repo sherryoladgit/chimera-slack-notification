@@ -10,6 +10,6 @@
     },
     "scripts": {
         "deploy": "export AWS_SDK_LOAD_CONFIG=1 && rm -rf ./.serverless-docker && docker build -t chimera-slack-notification-lambda . && docker create --name chimera-slack-notification chimera-slack-notification-lambda && docker cp chimera-slack-notification:/app/.serverless-docker ./ && docker rm chimera-slack-notification && sls deploy -p .serverless-docker",
-        "invoke": "AWS_SDK_LOAD_CONFIG=1 sls invoke -f ec2_backup -l"
+        "destroy": "sls delete"
     }
 }

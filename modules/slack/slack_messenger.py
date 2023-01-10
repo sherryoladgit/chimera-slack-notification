@@ -63,7 +63,7 @@ class SlackMessenger:
                 "raise",
                 "throw",
             ],
-            "warning": ["warn", "warning", "info"],
+            "warning": ["warn", "warning", "info", "debug"],
         }
 
         for c, statuses in color_map.items():

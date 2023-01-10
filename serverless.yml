@@ -5,6 +5,8 @@ provider:
   name: aws
   runtime: python3.8
   region: us-west-2
+  stage: dev
+
   # timeout: 900
   iam:
     role:
@@ -29,6 +31,21 @@ constructs:
     worker:
       handler: handler.consumer
 
+# Store the queue URL in parameter store
+resources:
+  Resources:
+    SaveQueueToParameterStore:
+      Type: AWS::SSM::Parameter
+      Properties:
+        Description: Store queue url in SSM parameter
+        Name: "/appsec/chimera/slackbot/queue_url"
+        Type: String
+        Value: ${construct:jobs.queueUrl}
+  Outputs:
+    QueueToParameterStoreID:
+      Description: "Queue URL in paramater store ID"
+      Value: !Ref SaveQueueToParameterStore
+
 plugins:
   - serverless-lift
   - serverless-python-requirements
@@ -44,5 +61,5 @@ custom:
   pythonRequirements:
     pythonBin: python3.8
     dockerizePip: false
-    # Alternative to Dockerfile but used prefer flexibility of Dockerfile
+    # Alternative to Dockerfile but prefer flexibility of Dockerfile
     # dockerImage: mlupin/docker-lambda:python3.9-build
